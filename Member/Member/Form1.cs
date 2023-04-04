@@ -22,49 +22,13 @@ namespace Member
             InitializeComponent();
         }
 
-      
+
 
         //https://www.youtube.com/watch?v=Vfr6dS8DjOY&ab_channel=PinoyFreeCoder
+        // https://www.google.com/search?q=windows+form+how+to+check+in+database+if+user+already+exist+in+sqlitedatabase+C%23+windows+form&oq=windows+form+how+to+check+in+database+if+user+already+exist+in+sqlitedatabase+C%23+windows+form&aqs=chrome..69i57j69i60.1208j0j7&sourceid=chrome&ie=UTF-8#fpstate=ive&vld=cid:8e253690,vid:AAlWMGMl5Y0
         private void button1_Click(object sender, EventArgs e)
         {
 
-            if (string.IsNullOrEmpty(txtid.Text) || string.IsNullOrEmpty(txtName.Text) || string.IsNullOrEmpty(txtAge.Text))
-
-            {
-                MessageBox.Show("Value is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-
-
-            else
-            {
-
-                SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
-                SQLiteDataAdapter da = new SQLiteDataAdapter("SELECT ID from User_Table where ID ='" + txtid.Text + "'",con);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-
-                if (dt.Rows.Count > 0)
-                {
-                    MessageBox.Show("ID already exist");
-                }
-                else 
-                {
-
-                    con.Open();
-                    SQLiteCommand cmd = new SQLiteCommand("insert into User_Table(ID,Name,Age) VALUES (@ID,@Name,@Age)", con);
-                    cmd.Parameters.AddWithValue("@ID", int.Parse(txtid.Text));
-                    cmd.Parameters.AddWithValue("@Name", txtName.Text);
-                    cmd.Parameters.AddWithValue("@Age", txtAge.Text);
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-
-                    txtid.Text = "";
-                    txtName.Text = "";
-                    txtAge.Text = "";
-                    MessageBox.Show(" Successfully Inserted");
-                }
-               
-            }
 
         }
       
@@ -73,51 +37,19 @@ namespace Member
         {
 
 
-            if (string.IsNullOrEmpty(txtid.Text) || string.IsNullOrEmpty(txtName.Text) || string.IsNullOrEmpty(txtAge.Text))
-            {
-                MessageBox.Show("Value is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
-                con.Open();
-
-                SQLiteCommand cmd = new SQLiteCommand("UPDATE User_Table SET Name=@Name, Age=@Age WHERE ID=@ID", con);
-                cmd.Parameters.AddWithValue("@ID", int.Parse(txtid.Text));
-                cmd.Parameters.AddWithValue("@Name", txtName.Text);
-                cmd.Parameters.AddWithValue("@Age", txtAge.Text);
-                cmd.ExecuteNonQuery();
-                con.Close();
-
-                txtid.Text = "";
-                txtName.Text = "";
-                txtAge.Text = "";
-                MessageBox.Show(" Successfully Updated");
-            }
+           
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
-            con.Open();
 
-            SQLiteCommand cmd = new SQLiteCommand("DELETE FROM User_Table WHERE ID=@ID", con);
-            cmd.Parameters.AddWithValue("@ID", int.Parse(txtid.Text));
-            cmd.ExecuteNonQuery();
-            con.Close();
 
-            txtid.Text = "";
-            txtName.Text = "";
-            txtAge.Text = "";
-            MessageBox.Show(" Successfully Deleted");
         }
 
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //    dataGridView1.Rows.Clear();
-            //    dataGridView1.Refresh();
-
+          
             SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
             con.Open();
 
@@ -135,10 +67,10 @@ namespace Member
         {
             foreach (DataGridViewRow row in dataGridView1.SelectedRows)
             {
-                txtid.Text =   row.Cells[0].Value.ToString();
+                txtworkerid.Text =   row.Cells[0].Value.ToString();
                 txtName.Text = row.Cells[1].Value.ToString();
                 txtAge.Text =  row.Cells[2].Value.ToString();
-
+              
             }
 
         }
@@ -229,12 +161,12 @@ namespace Member
         private void txtid_TextChanged(object sender, EventArgs e)
         {
             //this accepts only numbers and hyphen
-            if (System.Text.RegularExpressions.Regex.IsMatch(txtid.Text,"[^0-9-]")) 
+            if (System.Text.RegularExpressions.Regex.IsMatch(txtworkerid.Text, "[^0-9-]"))
             {
-                MessageBox.Show("Please Enter only a Numbers");
-                txtid.Text = txtid.Text.Remove(txtid.Text.Length -1);
+                MessageBox.Show("Please Fill the Right ID Number");
+                txtworkerid.Text = txtworkerid.Text.Remove(txtworkerid.Text.Length - 1);
             }
-            
+
         }
 
         private void txtName_TextChanged(object sender, EventArgs e)
@@ -255,7 +187,109 @@ namespace Member
         private void txtAge_KeyPress_1(object sender, KeyPressEventArgs e)
         {
             //Delete na key ang gagamitin sa pagbura
+            //this only accept numbers 
             e.Handled = !Char.IsNumber(e.KeyChar);
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            txtworkerid.Text = "";
+            txtName.Text = "";
+            txtAge.Text = "";
+        }
+
+        private void insertToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            if (string.IsNullOrEmpty(txtworkerid.Text) || string.IsNullOrEmpty(txtName.Text) || string.IsNullOrEmpty(txtAge.Text))
+
+            {
+                MessageBox.Show("Value is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+
+                SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
+                SQLiteDataAdapter da = new SQLiteDataAdapter("SELECT WorkersID from User_Table where WorkersID ='" + txtworkerid.Text + "'", con);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                if (dt.Rows.Count > 0)
+                {
+                    MessageBox.Show("WorkersID Already Exist");
+                }
+                else
+                {
+
+                    con.Open();
+                    SQLiteCommand cmd = new SQLiteCommand("insert into User_Table(WorkersID,Name,Age) VALUES (@WorkersID,@Name,@Age)", con);
+                    cmd.Parameters.AddWithValue("@WorkersID", int.Parse(txtworkerid.Text));
+                    cmd.Parameters.AddWithValue("@Name", txtName.Text);
+                    cmd.Parameters.AddWithValue("@Age", txtAge.Text);
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+
+                    txtworkerid.Text = "";
+                    txtName.Text = "";
+                    txtAge.Text = "";
+                    MessageBox.Show(" Successfully Inserted");
+                }
+
+            }
+        }
+
+        private void updateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtworkerid.Text) || string.IsNullOrEmpty(txtName.Text) || string.IsNullOrEmpty(txtAge.Text))
+            {
+                MessageBox.Show("Value is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
+                con.Open();
+
+                SQLiteCommand cmd = new SQLiteCommand("UPDATE User_Table SET Name=@Name, Age=@Age WHERE WorkersID=@WorkersID", con);
+                cmd.Parameters.AddWithValue("@WorkersID", int.Parse(txtworkerid.Text));
+                cmd.Parameters.AddWithValue("@Name", txtName.Text);
+                cmd.Parameters.AddWithValue("@Age", txtAge.Text);
+                cmd.ExecuteNonQuery();
+                con.Close();
+
+                txtworkerid.Text = "";
+                txtName.Text = "";
+                txtAge.Text = "";
+                MessageBox.Show(" Successfully Updated");
+            }
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            if (string.IsNullOrEmpty(txtworkerid.Text) || string.IsNullOrEmpty(txtName.Text) || string.IsNullOrEmpty(txtAge.Text))
+            {
+                MessageBox.Show("Value is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
+                con.Open();
+
+                SQLiteCommand cmd = new SQLiteCommand("DELETE FROM User_Table WHERE WorkersID=@WorkersID", con);
+                cmd.Parameters.AddWithValue("@WorkersID", int.Parse(txtworkerid.Text));
+                cmd.ExecuteNonQuery();
+                con.Close();
+
+                txtworkerid.Text = "";
+                txtName.Text = "";
+                txtAge.Text = "";
+                MessageBox.Show(" Successfully Deleted");
+            }
+        }
+
+        private void exitToolStripMenuItem_Click_2(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }
