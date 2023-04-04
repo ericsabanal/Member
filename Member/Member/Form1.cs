@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Data.SQLite;
 using System.Data.SqlClient;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 
 namespace Member
 {
@@ -27,7 +28,52 @@ namespace Member
         private void button1_Click(object sender, EventArgs e)
         {
 
-            if (string.IsNullOrEmpty(txtid.Text) || string.IsNullOrEmpty(txtName.Text))
+            if (string.IsNullOrEmpty(txtid.Text) || string.IsNullOrEmpty(txtName.Text) || string.IsNullOrEmpty(txtAge.Text))
+
+            {
+                MessageBox.Show("Value is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+
+            else
+            {
+
+                SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
+                SQLiteDataAdapter da = new SQLiteDataAdapter("SELECT ID from User_Table where ID ='" + txtid.Text + "'",con);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                if (dt.Rows.Count > 0)
+                {
+                    MessageBox.Show("ID already exist");
+                }
+                else 
+                {
+
+                    con.Open();
+                    SQLiteCommand cmd = new SQLiteCommand("insert into User_Table(ID,Name,Age) VALUES (@ID,@Name,@Age)", con);
+                    cmd.Parameters.AddWithValue("@ID", int.Parse(txtid.Text));
+                    cmd.Parameters.AddWithValue("@Name", txtName.Text);
+                    cmd.Parameters.AddWithValue("@Age", txtAge.Text);
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+
+                    txtid.Text = "";
+                    txtName.Text = "";
+                    txtAge.Text = "";
+                    MessageBox.Show(" Successfully Inserted");
+                }
+               
+            }
+
+        }
+      
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+
+            if (string.IsNullOrEmpty(txtid.Text) || string.IsNullOrEmpty(txtName.Text) || string.IsNullOrEmpty(txtAge.Text))
             {
                 MessageBox.Show("Value is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -36,7 +82,7 @@ namespace Member
                 SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
                 con.Open();
 
-                SQLiteCommand cmd = new SQLiteCommand("insert into User_Table(ID,Name,Age) VALUES (@ID,@Name,@Age)", con);
+                SQLiteCommand cmd = new SQLiteCommand("UPDATE User_Table SET Name=@Name, Age=@Age WHERE ID=@ID", con);
                 cmd.Parameters.AddWithValue("@ID", int.Parse(txtid.Text));
                 cmd.Parameters.AddWithValue("@Name", txtName.Text);
                 cmd.Parameters.AddWithValue("@Age", txtAge.Text);
@@ -46,28 +92,8 @@ namespace Member
                 txtid.Text = "";
                 txtName.Text = "";
                 txtAge.Text = "";
-                MessageBox.Show(" Successfully Inserted");
+                MessageBox.Show(" Successfully Updated");
             }
-           
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
-            con.Open();
-
-            SQLiteCommand cmd = new SQLiteCommand("UPDATE User_Table SET Name=@Name, Age=@Age WHERE ID=@ID", con);
-            cmd.Parameters.AddWithValue("@ID", int.Parse(txtid.Text));
-            cmd.Parameters.AddWithValue("@Name", txtName.Text);
-            cmd.Parameters.AddWithValue("@Age", txtAge.Text);
-            cmd.ExecuteNonQuery();
-            con.Close();
-
-            txtid.Text = "";
-            txtName.Text = "";
-            txtAge.Text = "";
-            MessageBox.Show(" Successfully Updated");
-
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -216,16 +242,6 @@ namespace Member
            
         }
 
-        private void txtAge_TextChanged_1(object sender, EventArgs e)
-        {
-            //this accepts only numbers and hyphen
-            if (System.Text.RegularExpressions.Regex.IsMatch(txtAge.Text, "[^0-9]"))
-            {
-                MessageBox.Show("Please Enter only a Numbers");
-                txtAge.Text = txtid.Text.Remove(txtAge.Text.Length - 1);
-            }
-        }
-
         //https://www.youtube.com/watch?v=ocD7wuF8PTg&ab_channel=InterviewPoint
         //https://stackoverflow.com/questions/16050749/how-restrict-textbox-in-c-sharp-to-only-receive-numbers-and-dot-or-comma
         private void txtName_KeyPress(object sender, KeyPressEventArgs e)
@@ -234,6 +250,12 @@ namespace Member
             {
                 e.Handled = true;   
             }
+        }
+
+        private void txtAge_KeyPress_1(object sender, KeyPressEventArgs e)
+        {
+            //Delete na key ang gagamitin sa pagbura
+            e.Handled = !Char.IsNumber(e.KeyChar);
         }
     }
 }
