@@ -17,4 +17,3 @@ C:\Users\csf\Desktop\Member\Member\Member\obj\Debug\Member.csproj.CoreCompileInp
 C:\Users\csf\Desktop\Member\Member\Member\obj\Debug\Member.csproj.CopyComplete
 C:\Users\csf\Desktop\Member\Member\Member\obj\Debug\Member.exe
 C:\Users\csf\Desktop\Member\Member\Member\obj\Debug\Member.pdb
-C:\Users\csf\Desktop\Member\Member\Member\obj\Debug\Member.Workers.resources

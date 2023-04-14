@@ -11,60 +11,92 @@ using System.Data.SqlClient;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
+using System.Xml.Linq;
 
 namespace Member
 {
     public partial class Form1 : Form
     {
 
-        DialogResult iExit;
+        private EmployeeDAO dao;
         public Form1()
         {
             InitializeComponent();
+            dao = new EmployeeDAO(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
         }
 
 
+        public void loadData()
+        {
+            dataGridView1.Refresh();
+            SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
+            con.Open();
+
+            SQLiteCommand cmd = new SQLiteCommand("select * from User_Table", con);
+            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            dataGridView1.DataSource = dt;
+            con.Close();
+        }
 
         //https://www.youtube.com/watch?v=Vfr6dS8DjOY&ab_channel=PinoyFreeCoder
         // https://www.google.com/search?q=windows+form+how+to+check+in+database+if+user+already+exist+in+sqlitedatabase+C%23+windows+form&oq=windows+form+how+to+check+in+database+if+user+already+exist+in+sqlitedatabase+C%23+windows+form&aqs=chrome..69i57j69i60.1208j0j7&sourceid=chrome&ie=UTF-8#fpstate=ive&vld=cid:8e253690,vid:AAlWMGMl5Y0
-       
+
         private void Form1_Load(object sender, EventArgs e)
         {
-           SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
-                con.Open();
+            dataGridView1.Refresh();
+            SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
+            con.Open();
 
-                SQLiteCommand cmd = new SQLiteCommand("select * from User_Table", con);
-                SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                da.Fill(dt);
-                dataGridView1.DataSource = dt;
+            SQLiteCommand cmd = new SQLiteCommand("select * from User_Table", con);
+            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            dataGridView1.DataSource = dt;
+            con.Close();
 
-                this.BackColor = Color.DarkGreen;
-                // Set the CellBorderStyle property to None
-                dataGridView1.CellBorderStyle = DataGridViewCellBorderStyle.None;
+            this.BackColor = Color.DarkGreen;
+            // Set the CellBorderStyle property to None
+            dataGridView1.CellBorderStyle = DataGridViewCellBorderStyle.None;
 
-                // Set the Anchor property to Top, Left, Right, Bottom
-                dataGridView1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            // Set the Anchor property to Top, Left, Right, Bottom
+            dataGridView1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
 
-                // Get the font of the TextBox control
-                Font textBoxFont = txtFirstname.Font;
+            // Get the font of the TextBox control
+            Font textBoxFont = txtFirstname.Font;
 
-                // Set the font of the DataGridView control
-                dataGridView1.DefaultCellStyle.Font = textBoxFont;
+            // Set the font of the DataGridView control
+            dataGridView1.DefaultCellStyle.Font = textBoxFont;
+
+
+            //https://www.google.com/search?tbm=vid&sxsrf=APwXEde6YOWKfQphKJ9CPpGDL5Snd_b_AA:1681258289548&q=how+to+change+color+of+column+header+of+datagridview+in+c%23&sa=X&ved=2ahUKEwjv9f6Yh6P-AhWzxTgGHX65A-UQ8ccDegQICxAH&biw=1352&bih=776&dpr=1#fpstate=ive&vld=cid:8d652060,vid:bJoy-JFMGYA
+            dataGridView1.EnableHeadersVisualStyles = false;
+            dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.Black;
+
+            //https://www.google.com/search?q=how+to+change+the+column+header+in+datagridview+in+csharp%3F&oq=how+to+change+the+column+header+in+datagridview+in+csharp%3F&aqs=chrome..69i57j0i22i30l7j0i390i650.24632j0j7&sourceid=chrome&ie=UTF-8#fpstate=ive&vld=cid:f7245692,vid:5S0JDRMdjfU
+            dataGridView1.Columns[0].HeaderText = "ID";
+            dataGridView1.Columns[1].HeaderText = "FIRST NAME";
 
         }
 
 
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+
             foreach (DataGridViewRow row in dataGridView1.SelectedRows)
             {
                 txtworkerid.Text = row.Cells[0].Value.ToString();
                 txtFirstname.Text = row.Cells[1].Value.ToString();
                 txtmiddlename.Text = row.Cells[2].Value.ToString();
-                txtAge.Text = row.Cells[3].Value.ToString();
-                txtsuffix.Text = row.Cells[4].Value.ToString();
-                dateTimePicker1.Text = row.Cells[5].Value.ToString();
+                txtlastname.Text = row.Cells[3].Value.ToString();
+                txtAge.Text = row.Cells[4].Value.ToString();
+                txtsuffix.Text = row.Cells[5].Value.ToString();
+                dtp.Text = row.Cells[6].Value.ToString();
+                lstCivilStat.Text = row.Cells[7].Value.ToString();
+                txtdesignation.Text = row.Cells[8].Value.ToString();
+
 
                 txtworkerid.ForeColor = Color.White;
                 txtworkerid.BackColor = Color.Black;
@@ -75,17 +107,24 @@ namespace Member
                 txtmiddlename.ForeColor = Color.White;
                 txtmiddlename.BackColor = Color.Black;
 
+                txtlastname.ForeColor = Color.White;
+                txtlastname.BackColor = Color.Black;
+
                 txtAge.ForeColor = Color.White;
                 txtAge.BackColor = Color.Black;
 
                 txtsuffix.ForeColor = Color.White;
                 txtsuffix.BackColor = Color.Black;
 
+                lstCivilStat.ForeColor = Color.White;
+                lstCivilStat.BackColor = Color.Black;
+
+                txtdesignation.ForeColor = Color.White;
+                txtdesignation.BackColor = Color.Black;
+
             }
 
         }
-
-
 
         private void btnRead_Click(object sender, EventArgs e)
         {
@@ -99,57 +138,30 @@ namespace Member
             dataGridView1.DataSource = dt;
         }
 
-        //https://www.youtube.com/watch?v=6YMRiQ87EVo&ab_channel=DJOamen
-        private void btnExit_Click(object sender, EventArgs e)
-        {
-            iExit = MessageBox.Show("Confirm if you want to exit","DatagridView",MessageBoxButtons.YesNo,MessageBoxIcon.Information);
 
-            if (iExit == DialogResult.Yes) 
-            {
-            Application.Exit();
-            }
-        }
 
-        public DataTable GetName(string name) 
+        public DataTable GetName(string name)
         {
-            string query = string.Format("SELECT * FROM User_Table where FirstName like '%{0}%'",name);
+            string query = string.Format("SELECT * FROM User_Table where FirstName like '%{0}%'", name);
             return DataAccess.ExecuteQuery(query);
         }
-       
+
 
         private void txtSearch_TextChanged(object sender, EventArgs e)
         {
             Form1 form = new Form1();
-           dataGridView1.DataSource= form.GetName(txtSearch.Text.Trim());
-
+            dataGridView1.DataSource = form.GetName(txtSearch.Text.Trim());
             txtSearch.BackColor = Color.Black;
             txtSearch.ForeColor = Color.White;
         }
 
-        //private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        //{
-        //    iExit = MessageBox.Show("Confirm if you want to exit", "DatagridView", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-        //    if (iExit == DialogResult.Yes)
-        //    {
-        //        Application.Exit();
-        //    }
-        //}
-
-
 
         private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
-            con.Open();
-            SQLiteCommand cmd = new SQLiteCommand("select * from User_Table", con);
-            SQLiteDataAdapter da = new SQLiteDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            dataGridView1.DataSource = dt;
+            loadData();
         }
 
-       
+
 
         private void txtid_TextChanged(object sender, EventArgs e)
         {
@@ -158,6 +170,7 @@ namespace Member
             {
                 MessageBox.Show("Please Fill the Right ID Number");
                 txtworkerid.Text = txtworkerid.Text.Remove(txtworkerid.Text.Length - 1);
+                return;
             }
 
         }
@@ -169,7 +182,7 @@ namespace Member
         {
             if (!char.IsLetter(e.KeyChar) && !Char.IsControl(e.KeyChar) && !Char.IsWhiteSpace(e.KeyChar))
             {
-                e.Handled = true;   
+                e.Handled = true;
             }
         }
 
@@ -187,110 +200,14 @@ namespace Member
             txtFirstname.Text = "";
             txtmiddlename.Clear();
             txtAge.Text = "";
-        }
-
-       
-        private void insertToolStripMenuItem_Click(object sender, EventArgs e)    
-        {
-             if (string.IsNullOrEmpty(txtworkerid.Text))
-            {
-                MessageBox.Show("WorkersID is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            if (string.IsNullOrEmpty(txtFirstname.Text))
-            {
-                MessageBox.Show("FirstName is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            if (string.IsNullOrEmpty(txtmiddlename.Text))
-            {
-                MessageBox.Show("MiddleName is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            if (string.IsNullOrEmpty(txtAge.Text))
-            {
-                MessageBox.Show("Please Fill Up Your Age", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            else
-            {
-            SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
-            SQLiteDataAdapter da = new SQLiteDataAdapter("SELECT WorkersID from User_Table where WorkersID ='" + txtworkerid.Text + "'", con);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-
-                if (dt.Rows.Count > 0)
-                {
-                    MessageBox.Show("WorkersID Already Exist");
-                }
-                else
-                {
-
-                    con.Open();
-                    string query = "INSERT INTO User_Table (WorkersID, FirstName, middlename, Age, suffix, birthday) VALUES (@WorkersID, @FirstName, @middlename, @Age, @suffix, @birthday)";
-
-                    SQLiteCommand cmd = new SQLiteCommand(query, con);
-                    cmd.Parameters.AddWithValue("@WorkersID", int.Parse(txtworkerid.Text));
-                    cmd.Parameters.AddWithValue("@FirstName", txtFirstname.Text);
-                    cmd.Parameters.AddWithValue("@middlename", txtmiddlename.Text);
-                    cmd.Parameters.AddWithValue("@Age", txtAge.Text);
-                    cmd.Parameters.AddWithValue("@suffix", txtsuffix.Text);
-                    cmd.Parameters.AddWithValue("@birthday", dateTimePicker1.Value);
-                    cmd.ExecuteNonQuery();
-                    con.Close();
-
-                    txtworkerid.Text = "";
-                    txtFirstname.Text = "";
-                    txtmiddlename.Text = "";
-                    txtAge.Text = "";
-                    txtsuffix.Clear();
-                    dateTimePicker1.Value = DateTime.Now.AddYears(-18);
-                    MessageBox.Show("Successfully Inserted");
-                }
-            }
+            txtsuffix.Clear();
+            lstCivilStat.SelectedIndex = 0;
+            txtdesignation.Clear();
+            dtp.Value = DateTime.Now;
+            txtlastname.Clear();
         }
 
 
-
-        private void updateToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(txtworkerid.Text) || string.IsNullOrEmpty(txtFirstname.Text) || string.IsNullOrEmpty(txtAge.Text))
-            {
-                MessageBox.Show("Value is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-            if (string.IsNullOrEmpty(txtmiddlename.Text)) 
-            {
-                MessageBox.Show("MiddleName is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-          
-            else
-            {
-                SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
-                con.Open();
-
-                SQLiteCommand cmd = new SQLiteCommand("UPDATE User_Table SET FirstName=@FirstName,middlename=@middlename,Age=@Age,suffix=@suffix WHERE WorkersID=@WorkersID", con);
-                cmd.Parameters.AddWithValue("@WorkersID", int.Parse(txtworkerid.Text));
-                cmd.Parameters.AddWithValue("@FirstName", txtFirstname.Text);
-                cmd.Parameters.AddWithValue("@middlename", txtmiddlename.Text);
-                cmd.Parameters.AddWithValue("@Age", txtAge.Text);
-                cmd.Parameters.AddWithValue("@suffix", txtsuffix.Text);
-                cmd.ExecuteNonQuery();
-                con.Close();
-
-                txtworkerid.Text = "";
-                txtFirstname.Text = "";
-                txtmiddlename.Clear();
-                txtAge.Text = "";
-                txtsuffix.Clear();
-                MessageBox.Show("Successfully Updated");
-
-
-            }
-        }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -310,23 +227,22 @@ namespace Member
                 using (SQLiteConnection con = new SQLiteConnection(query))
                 {
                     con.Open();
-
-                    using (SQLiteCommand cmd = new SQLiteCommand("DELETE FROM User_Table WHERE WorkersID=@WorkersID", con))
+                    using (SQLiteCommand cmd = new SQLiteCommand("DELETE FROM User_Table WHERE workers_id=@workers_id", con))
                     {
-                        cmd.Parameters.AddWithValue("@WorkersID", int.Parse(txtworkerid.Text));
+                        cmd.Parameters.AddWithValue("@workers id", int.Parse(txtworkerid.Text));
                         cmd.ExecuteNonQuery();
                     }
-
                     con.Close();
+                    loadData();
                 }
 
                 // Clear the textboxes
                 txtworkerid.Text = "";
                 txtFirstname.Text = "";
                 txtmiddlename.Clear();
+                txtlastname.Clear();
                 txtAge.Text = "";
                 txtsuffix.Clear();
-
                 MessageBox.Show("Deleted successfully.");
             }
         }
@@ -347,17 +263,85 @@ namespace Member
             }
         }
 
-        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+
+        private void refreshToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
-            DateTime selectedDateTime = dateTimePicker1.Value;
-            return;
+            loadData();
         }
 
-        private void workersInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        private void txtAge_TextChanged(object sender, EventArgs e)
         {
-            Workers workers = new Workers();
-            workers.Show();
+            //this accepts only numbers and hyphen
+            if (System.Text.RegularExpressions.Regex.IsMatch(txtworkerid.Text, "[^0-9-]"))
+            {
+                MessageBox.Show("Please Fill the Right Age");
+                txtworkerid.Text = txtworkerid.Text.Remove(txtworkerid.Text.Length - 1);
+            }
         }
 
+        private void txtSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            txtSearch.Clear();
+        }
+
+        private void txtdesignation_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsLetter(e.KeyChar) && !Char.IsControl(e.KeyChar) && !Char.IsWhiteSpace(e.KeyChar) && e.KeyChar != '.')
+            {
+                e.Handled = true;
+            }
+        }
+
+
+        private void addEmployeeButton_Click(object sender, EventArgs e)
+        {
+         
+            try
+            {
+               
+                Employee newEmployee = new Employee();
+                newEmployee.WorkersID = int.Parse(txtworkerid.Text);
+                newEmployee.FirstName = txtFirstname.Text;
+                newEmployee.MiddleName = txtmiddlename.Text;
+                newEmployee.LastName = txtlastname.Text;
+                newEmployee.Birthday = dtp.Value;
+            
+                dao.Create(newEmployee);
+           
+            }
+
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+        }
+
+
+
+
+
+        private void update_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Employee employee = new Employee()
+                {
+                    FirstName = txtFirstname.Text,
+                    MiddleName=txtmiddlename.Text,
+                    LastName=txtlastname.Text,  
+                    Birthday = dtp.Value
+                };
+                dao.Update(employee);
+                MessageBox.Show("Employee Successfully Updated");
+            }
+            catch (InvalidOperationException ex)
+            {
+
+                MessageBox.Show(ex.Message);
+            }
+        }
     }
 }
+
+

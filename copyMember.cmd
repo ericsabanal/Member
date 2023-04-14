@@ -1,7 +1,7 @@
 @echo off
 
 set basedir=\\ERIC-PC\Users\Public
-set folder=Member
+set folder=MemberBago
 set src=C:\Users\csf\Desktop\Member
 set dest=%basedir%\Visual Studio 2023\%folder%
 

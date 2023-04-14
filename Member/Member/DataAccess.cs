@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -15,7 +16,6 @@ namespace Member
 
         public static DataTable ExecuteQuery(string query) 
         {
-
             SQLiteConnection con = new SQLiteConnection(dbPath);
             con.Open();
             SQLiteCommand cmd = new SQLiteCommand(query, con);

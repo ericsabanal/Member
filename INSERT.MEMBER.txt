@@ -1,0 +1,213 @@
+  private void insertToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtworkerid.Text))
+            {
+                MessageBox.Show("WorkersID is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (string.IsNullOrEmpty(txtFirstname.Text))
+            {
+                MessageBox.Show("FirstName is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(txtmiddlename.Text))
+            {
+                MessageBox.Show("MiddleName is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (string.IsNullOrEmpty(txtlastname.Text))
+            {
+                MessageBox.Show("Please Provide Your LastName", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (string.IsNullOrEmpty(txtAge.Text))
+            {
+                MessageBox.Show("Please Provide Your Age", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            int edad = int.Parse(txtAge.Text.Trim());
+            if (edad < 18)
+            {
+                MessageBox.Show("Invalid Age!");
+                return;
+            }
+            DateTime selectedDate = dtp.Value;
+            DateTime currentDate = DateTime.Now;
+            int age = currentDate.Year - selectedDate.Year;
+            if (selectedDate > currentDate.AddYears(-age))
+                age--;
+            if (age < 18)
+            {
+                MessageBox.Show("Please Provide Your Birthday Correctly!");
+                return;
+            }
+            if (string.IsNullOrEmpty(txtdesignation.Text))
+            {
+                MessageBox.Show("Please Provide Your Designation", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (lstCivilStat.SelectedIndex == 0)
+            {
+                MessageBox.Show("Please provide your Status");
+                return;
+            }
+            else
+            {
+                SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
+                SQLiteDataAdapter da = new SQLiteDataAdapter("SELECT workers_id from User_Table where workers_id ='" + txtworkerid.Text + "'", con);
+                DataTable dt = new DataTable();
+                da.Fill(dt);
+
+                if (dt.Rows.Count > 0)
+                {
+                    MessageBox.Show("WorkersID Already Exist");
+                }
+                else
+                {
+                    con.Open();
+                    string query = "INSERT INTO User_Table (workers_id, firstname, middlename, lastname, age, suffix, birthday, designation) VALUES (@workers_id, @firstname, @middlename, @lastname, @age, @suffix,@birthday,@designation)";
+
+                    SQLiteCommand cmd = new SQLiteCommand(query, con);
+                    cmd.Parameters.AddWithValue("@workers_id", int.Parse(txtworkerid.Text));
+                    cmd.Parameters.AddWithValue("@firstname", txtFirstname.Text);
+                    cmd.Parameters.AddWithValue("@middlename", txtmiddlename.Text);
+                    cmd.Parameters.AddWithValue("@lastname", txtlastname.Text);
+                    cmd.Parameters.AddWithValue("@age", txtAge.Text);
+                    cmd.Parameters.AddWithValue("@suffix", txtsuffix.Text);
+                    cmd.Parameters.AddWithValue("@birthday", dtp.Value);
+                    cmd.Parameters.AddWithValue("@designation", txtdesignation.Text);
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                    loadData();
+
+                    txtworkerid.Text = "";
+                    txtFirstname.Text = "";
+                    txtmiddlename.Clear();
+                    txtlastname.Clear();
+                    txtAge.Text = "";
+                    txtsuffix.Clear();
+                    txtdesignation.Clear();
+                    dtp.Value = DateTime.Now;
+                    MessageBox.Show("Congratulation.The Information You Provide Successfully Added");
+                }
+            }
+        }
+
+
+
+
+
+        private void updateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtworkerid.Text) || string.IsNullOrEmpty(txtFirstname.Text) || string.IsNullOrEmpty(txtAge.Text))
+            {
+                MessageBox.Show("Value is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            int edad = int.Parse(txtAge.Text.Trim());
+            if (edad < 18)
+            {
+                MessageBox.Show("The Age you Fill is Invalid it might be to young");
+                return;
+            }
+            if (string.IsNullOrEmpty(txtmiddlename.Text))
+            {
+                MessageBox.Show("MiddleName is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            if (string.IsNullOrEmpty(txtlastname.Text))
+            {
+                MessageBox.Show("LastName is Required", "Message Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            DateTime selectedDate = dtp.Value;
+            DateTime currentDate = DateTime.Now;
+            int age = currentDate.Year - selectedDate.Year;
+            if (selectedDate > currentDate.AddYears(-age))
+                age--;
+            if (age < 18)
+            {
+                MessageBox.Show("Please Provide your birthday correctly");
+                //dtp.Value = currentDate.AddYears(-18);
+                return;
+            }
+            if (lstCivilStat.SelectedIndex == 0)
+            {
+                MessageBox.Show("Please provide your Status");
+                return;
+            }
+            if (string.IsNullOrEmpty(txtdesignation.Text))
+            {
+                MessageBox.Show("Please provide your Designation");
+                return;
+            }
+            else
+            {
+                SQLiteConnection con = new SQLiteConnection(@"Data Source = C:\Users\csf\Desktop\Member\Member\Member\bin\Debug\Member.db");
+                con.Open();
+                string query = "UPDATE User_Table SET firstname=@firstname,middlename=@middlename, lastname=@lastname, age=@age,suffix=@suffix,birthday=@birthday,civil_status=@civil_status,designation=@designation WHERE workers_id=@workers_id";
+                SQLiteCommand cmd = new SQLiteCommand(query, con);
+                cmd.Parameters.AddWithValue("@workers_id", int.Parse(txtworkerid.Text));
+                cmd.Parameters.AddWithValue("@firstname", txtFirstname.Text);
+                cmd.Parameters.AddWithValue("@middlename", txtmiddlename.Text);
+                cmd.Parameters.AddWithValue("@lastname", txtlastname.Text);
+                cmd.Parameters.AddWithValue("@age", txtAge.Text);
+                cmd.Parameters.AddWithValue("@suffix", txtsuffix.Text);
+                cmd.Parameters.AddWithValue("@birthday", dtp.Value);
+                cmd.Parameters.AddWithValue("@civil_status", lstCivilStat.Text);
+                cmd.Parameters.AddWithValue("@designation", txtdesignation.Text);
+                cmd.ExecuteNonQuery();
+                con.Close();
+                loadData();
+
+                txtworkerid.Text = "";
+                txtFirstname.Text = "";
+                txtmiddlename.Clear();
+                txtlastname.Clear();
+                txtAge.Text = "";
+                txtsuffix.Clear();
+                lstCivilStat.SelectedIndex = 0;
+                txtdesignation.Clear();
+                dtp.Value = DateTime.Now;
+                MessageBox.Show("Successfully Updated");
+            }
+        }
+
+
+
+
+
+Checking if id is already exist?
+
+public int WorkersID 
+{
+    get { return _workersID; } 
+    set 
+    {
+        // Check if the new value is different from the current one
+        if (value != _workersID)
+        {
+            // Check if the value already exists in your data source
+            bool isDuplicate = CheckIfWorkerIDExists(value);
+
+            if (isDuplicate)
+            {
+                throw new Exception("Worker ID already exists");
+            }
+            else
+            {
+                _workersID = value;
+            }
+        }
+    } 
+}
+
+private bool CheckIfWorkerIDExists(int workersID)
+{
+    // Query your data source to check if a record with the same ID already exists
+    // Return true if it does, false otherwise
+}
+
+
+
